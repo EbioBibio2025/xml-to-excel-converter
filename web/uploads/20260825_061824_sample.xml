@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<restaurant>
+    <menu>
+        <food id="1">
+            <name>پیتزا مخصوص</name>
+            <price>150000</price>
+            <calories>850</calories>
+            <ingredients>
+                <item>پنیر موتزارلا</item>
+                <item>سس گوجه</item>
+                <item>قارچ</item>
+                <item>فلفل دلمه</item>
+            </ingredients>
+            <is_vegetarian>false</is_vegetarian>
+        </food>
+        <food id="2">
+            <name>سالاد سزار</name>
+            <price>120000</price>
+            <calories>420</calories>
+            <ingredients>
+                <item>کاهو</item>
+                <item>مرغ کبابی</item>
+                <item>پنیر پارمزان</item>
+                <item>سس سزار</item>
+            </ingredients>
+            <is_vegetarian>false</is_vegetarian>
+        </food>
+        <food id="3">
+            <name>ماکارونی سبزیجات</name>
+            <price>130000</price>
+            <calories>580</calories>
+            <ingredients>
+                <item>ماکارونی</item>
+                <item>کدو سبز</item>
+                <item>بادمجان</item>
+                <item>گوجه گیلاسی</item>
+            </ingredients>
+            <is_vegetarian>true</is_vegetarian>
+        </food>
+    </menu>
+</restaurant>

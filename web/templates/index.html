@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XML to Excel Converter</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- هدر -->
+        <header>
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-file-code"></i>
+                    <i class="fas fa-arrow-right"></i>
+                    <i class="fas fa-file-excel"></i>
+                </div>
+                <div>
+                    <h1>XML to Excel Converter</h1>
+                    <p class="subtitle">تبدیل حرفه‌ای فایل‌های XML به Excel، CSV و JSON</p>
+                </div>
+            </div>
+            <div class="version-badge">نسخه وب v2.0</div>
+        </header>
+
+        <!-- بخش آپلود -->
+        <section class="upload-section">
+            <div class="upload-box" id="uploadBox">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <h3>فایل XML خود را انتخاب کنید</h3>
+                <p>فایل را بکشید و رها کنید یا کلیک کنید</p>
+                <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-folder-open"></i> انتخاب فایل
+                </button>
+                <input type="file" id="fileInput" accept=".xml" hidden>
+                <p class="upload-info"><i class="fas fa-info-circle"></i> حداکثر ۵۰ مگابایت</p>
+            </div>
+
+            <!-- اطلاعات فایل -->
+            <div class="file-info" id="fileInfo" style="display:none;">
+                <div class="file-details">
+                    <div class="file-icon-wrapper">
+                        <i class="fas fa-file-code"></i>
+                    </div>
+                    <div class="file-data">
+                        <span class="file-name" id="fileName"></span>
+                        <span class="file-size" id="fileSize"></span>
+                    </div>
+                </div>
+                <div class="file-actions">
+                    <button class="btn btn-success btn-sm" id="convertBtn" onclick="startConversion()">
+                        <i class="fas fa-play"></i> شروع تبدیل
+                    </button>
+                    <button class="btn btn-danger btn-sm" onclick="removeFile()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- پیشرفت -->
+            <div class="upload-progress" id="uploadProgress" style="display:none;">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <p class="progress-text" id="progressText">در حال آپلود...</p>
+            </div>
+        </section>
+
+        <!-- اطلاعات XML -->
+        <section class="info-section" id="infoSection" style="display:none;">
+            <div class="section-header">
+                <h2><i class="fas fa-code"></i> ساختار فایل XML</h2>
+                <span class="badge" id="recordCount">۰ المان</span>
+            </div>
+            <div class="info-grid" id="infoGrid"></div>
+        </section>
+
+        <!-- تنظیمات -->
+        <section class="settings-section" id="settingsSection" style="display:none;">
+            <div class="section-header">
+                <h2><i class="fas fa-sliders-h"></i> تنظیمات تبدیل</h2>
+            </div>
+            <div class="settings-grid">
+                <div class="setting-item">
+                    <label for="targetTag"><i class="fas fa-tag"></i> تگ هدف (اختیاری)</label>
+                    <input type="text" id="targetTag" placeholder="مثال: food" dir="ltr">
+                    <small>اگر خالی بماند، تمام داده‌ها استخراج می‌شوند</small>
+                </div>
+                <div class="setting-item">
+                    <label for="outputFormat"><i class="fas fa-file-export"></i> فرمت خروجی</label>
+                    <select id="outputFormat">
+                        <option value="Excel (xlsx)">📊 Excel (xlsx)</option>
+                        <option value="CSV">📄 CSV</option>
+                        <option value="JSON">📋 JSON</option>
+                        <option value="همه فرمت‌ها">📦 همه فرمت‌ها</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label for="outputName"><i class="fas fa-pen"></i> نام فایل خروجی</label>
+                    <input type="text" id="outputName" value="converted" dir="ltr">
+                </div>
+                <div class="setting-item checkbox">
+                    <label>
+                        <input type="checkbox" id="generateSummary" checked>
+                        <i class="fas fa-chart-bar"></i> تولید گزارش خلاصه
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- نتایج -->
+        <section class="results-section" id="resultsSection" style="display:none;">
+            <div class="section-header">
+                <h2><i class="fas fa-check-circle" style="color: #27ae60;"></i> نتایج تبدیل</h2>
+            </div>
+            <div class="results-stats" id="resultsStats"></div>
+            <div class="download-list" id="downloadList"></div>
+        </section>
+
+        <!-- لاگ -->
+        <section class="log-section">
+            <div class="log-header">
+                <h3><i class="fas fa-list"></i> گزارش عملیات</h3>
+                <button class="btn btn-secondary btn-sm" onclick="clearLog()">
+                    <i class="fas fa-eraser"></i> پاک کردن
+                </button>
+            </div>
+            <div class="log-content" id="logContent">
+                <div class="log-entry info">
+                    <i class="fas fa-info-circle"></i>
+                    <span>برنامه آماده است. فایل XML خود را آپلود کنید.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- فوتر -->
+        <footer>
+            <div class="footer-content">
+                <p><i class="fas fa-heart" style="color: #e74c3c;"></i> ساخته شده با استفاده از Flask و Python</p>
+                <div class="footer-links">
+                    <a href="#" onclick="clearAll()"><i class="fas fa-trash-alt"></i> پاک کردن همه</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay" style="display:none;">
+        <div class="overlay-content">
+            <div class="spinner"></div>
+            <h3>در حال پردازش...</h3>
+            <p id="overlayText">لطفاً صبر کنید</p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
